@@ -80,7 +80,7 @@ export OF_VANILLA_BUILD=0
 export OF_NO_RELOAD_AFTER_DECRYPTION=1
 export OF_PATCH_AVB20=1
 export OF_FIX_DECRYPTION_ON_DATA_MEDIA=1
-
+export FOX_USE_SED_BINARY=1
 export FOX_RECOVERY_SYSTEM_PARTITION="/dev/block/mapper/system"
 export FOX_RECOVERY_VENDOR_PARTITION="/dev/block/mapper/vendor"
   
