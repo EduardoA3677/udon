@@ -42,6 +42,7 @@ service overrideprops /system/bin/overrideprops.sh
     seclabel u:r:recovery:s0
 
 on init
+    setprop sys.usb.configfs 1
     start boot-hal-1-1
 
 on fs
