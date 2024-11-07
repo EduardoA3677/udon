@@ -46,10 +46,22 @@ on early-init
 
 on init
     write /sys/class/backlight/panel0-backlight/brightness 200
+    setprop sys.usb.configfs 1
+    setprop sys.usb.config adb
+
 
 on fs
+    mkdir /dev/block/bootdevice/ 0770 shell system
+    mkdir /dev/block/bootdevice/by-name/ 0770 shell system
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/boot_a /dev/block/bootdevice/by-name/boot_a
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/boot_b /dev/block/bootdevice/by-name/boot_b
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/system /dev/block/bootdevice/by-name/system
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/modemst1 /dev/block/bootdevice/by-name/modemst1
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/modemst2 /dev/block/bootdevice/by-name/modemst2
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/ocdt /dev/block/bootdevice/by-name/ocdt
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/persist /dev/block/bootdevice/by-name/persist
 
     # Load ADSP firmware for PMIC
     mkdir /firmware
@@ -76,3 +88,9 @@ on property:ro.twrp.fastbootd=1
     wait /sys/class/power_supply/battery
     start health-hal-2-1
     umount /firmware
+
+on property:hwservicemanager.ready=true
+    setprop ro.separate.soft ${ro.boot.prjname}
+
+on property:twrp.decrypt.done=true
+    setprop ro.separate.soft ${ro.boot.prjname}
