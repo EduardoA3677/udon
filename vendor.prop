@@ -8,4 +8,5 @@ ro.crypto.volume.metadata.method=dm-default-key
 vendor.gatekeeper.disable_spu=true
 
 # USB Config
+vendor.usb.product_string=OnePlus 11R
 vendor.usb.use_ffs_mtp=1
