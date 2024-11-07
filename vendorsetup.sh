@@ -53,7 +53,7 @@ export OF_FIX_OTA_UPDATE_MANUAL_FLASH_ERROR=1
 export OF_DISABLE_MIUI_OTA_BY_DEFAULT=1
 
 # -- add settings for R11.1 --
-export OF_QUICK_BACKUP_LIST="/boot;/data;/super;"
+export OF_QUICK_BACKUP_LIST="/boot;/data;"
 
 # Set default Keymaster Version
 export OF_DEFAULT_KEYMASTER_VERSION=4.1
