@@ -55,22 +55,18 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
 AB_OTA_PARTITIONS := abl aop aop_config bluetooth boot cpucp devcfg dsp dtbo engineering_cdt featenabler hyp imagefv keymaster modem my_bigball my_carrier my_colorospro my_company my_engineering my_heytap my_manifest my_preload my_product my_region my_stock odm odm_dlkm oplus_sec oplusstanvbk product qupfw recovery shrm splash system system_ext tz uefi uefisecapp vbmeta vbmeta_system vbmeta_vendor vendor vendor_boot vendor_dlkm xbl xbl_config xbl_ramdump
 
 # A/B related packages
-PRODUCT_PACKAGES += update_engine \
-    update_engine_client \
-    update_verifier \
-    android.hardware.boot@1.2-impl-qti \
+PRODUCT_PACKAGES += android.hardware.boot@1.2-impl-qti \
     android.hardware.boot@1.2-impl-qti.recovery \
     android.hardware.boot@1.2-service
-    android.hardware.gatekeeper@1.0-service-qti
-    android.hardware.keymaster@4.1-service-qti
-    android.hardware.security.keymint-service-qti
-    vendor.qti.hardware.qteeconnector@1.0-service
-    android.hardware.keymaster@4.0-service-qti
-    vendor.qti.hardware.qseecomd@1.0-service
-    
+  
 PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
+
+PRODUCT_PACKAGES += \
+    update_engine \
+    update_engine_sideload \
+    update_verifier
 
 PRODUCT_PACKAGES += \
   update_engine_sideload
@@ -81,9 +77,19 @@ PRODUCT_PACKAGES += \
     f2fs_io \
     check_f2fs
 
+# OTA Script
+PRODUCT_PACKAGES += \
+    oplusotapreopt_script
+
 # Userdata checkpoint
 PRODUCT_PACKAGES += \
     checkpoint_gc
+
+AB_OTA_POSTINSTALL_CONFIG += \
+    RUN_POSTINSTALL_system=true \
+    POSTINSTALL_PATH_system=system/bin/oplusotapreopt_script \
+    FILESYSTEM_TYPE_system=ext4 \
+    POSTINSTALL_OPTIONAL_system=true
 
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_vendor=true \
@@ -105,9 +111,9 @@ PRODUCT_BUILD_SUPER_PARTITION := false
 # Dynamic partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
-# fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl-mock \
+    android.hardware.fastboot@1.1-impl-mock.recovery \
     fastbootd
 
 # qcom decryption
@@ -125,6 +131,8 @@ SOONG_CONFIG_ufsbsg_ufsframework := bsg
 # OEM otacerts
 PRODUCT_EXTRA_RECOVERY_KEYS += \
     $(DEVICE_PATH)/security/otacert
+
+RELAX_USES_LIBRARY_CHECK := true
 
 # System AVB
 BOARD_AVB_VBMETA_SYSTEM := system
