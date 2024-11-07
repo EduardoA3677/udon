@@ -60,12 +60,12 @@ PRODUCT_PACKAGES += update_engine \
     update_verifier \
     android.hardware.boot@1.2-impl-qti \
     android.hardware.boot@1.2-impl-qti.recovery \
-    android.hardware.boot@1.2-service
-    android.hardware.gatekeeper@1.0-service-qti
-    android.hardware.keymaster@4.1-service-qti
-    android.hardware.security.keymint-service-qti
-    vendor.qti.hardware.qteeconnector@1.0-service
-    android.hardware.keymaster@4.0-service-qti
+    android.hardware.boot@1.2-service \
+    android.hardware.gatekeeper@1.0-service-qti \
+    android.hardware.keymaster@4.1-service-qti \
+    android.hardware.security.keymint-service-qti \
+    vendor.qti.hardware.qteeconnector@1.0-service \
+    android.hardware.keymaster@4.0-service-qti \
     vendor.qti.hardware.qseecomd@1.0-service
     
 PRODUCT_PACKAGES += \
