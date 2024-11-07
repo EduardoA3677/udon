@@ -27,6 +27,19 @@
 
 import /init.recovery.qcom_decrypt.rc
 
+service variant-script /system/bin/variant-script.sh
+    user root
+    group root
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
+service overrideprops /system/bin/overrideprops.sh
+    user root
+    group root
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
+
 on property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
     wait /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode
@@ -87,3 +100,5 @@ on boot
 
 on post-fs
     start boot-hal-1-2
+    start variant-script
+    start overrideprops
