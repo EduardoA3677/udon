@@ -44,6 +44,7 @@ AB_OTA_UPDATER := true
 
 # VNDK
 PRODUCT_TARGET_VNDK_VERSION := 31
+BOARD_SYSTEMSDK_VERSIONS := 31
 
 # Virtual A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
@@ -102,6 +103,9 @@ PRODUCT_PACKAGES += android.hardware.fastboot@1.1-impl-mock
 PRODUCT_PACKAGES += \
     qcom_decrypt \
     qcom_decrypt_fbe
+
+# Relax
+RELAX_USES_LIBRARY_CHECK := true
 
 #namespace definition for librecovery_updater
 #differentiate legacy 'sg' or 'bsg' framework
