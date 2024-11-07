@@ -115,9 +115,6 @@ PRODUCT_PACKAGES += \
     qcom_decrypt \
     qcom_decrypt_fbe
 
-# Relax
-RELAX_USES_LIBRARY_CHECK := true
-
 #namespace definition for librecovery_updater
 #differentiate legacy 'sg' or 'bsg' framework
 SOONG_CONFIG_NAMESPACES += ufsbsg
