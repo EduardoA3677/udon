@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018,2020-2021 The Linux Foundation. All rights reserved.
+# Copyright (c) 2017-2018,2020 The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -27,67 +27,54 @@
 
 import /init.recovery.qcom_decrypt.rc
 
-service variant-script /system/bin/variant-script.sh
-    user root
-    group root
-    disabled
-    oneshot
-    seclabel u:r:recovery:s0
-
-service overrideprops /system/bin/overrideprops.sh
-    user root
-    group root
-    disabled
-    oneshot
-    seclabel u:r:recovery:s0
+on property:ro.boot.usbcontroller=*
+    setprop sys.usb.controller ${ro.boot.usbcontroller}
+    wait /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode
+    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
+    wait /sys/class/udc/${ro.boot.usbcontroller} 1
 
 on early-init
+    #Gerry.ding@BSP.CHG.Basic, 2021/09/28,Add for charge in recovery mode
     write /proc/sys/kernel/firmware_config/force_sysfs_fallback 1
 
-on init
-    write /sys/class/backlight/panel0-backlight/brightness 200
-    setprop sys.usb.configfs 1
-
+on early-fs
+    write /proc/sys/kernel/sched_lib_name "recovery,magiskboot,Updater,updater,update_engine_sideload"
+    write /proc/sys/kernel/sched_lib_mask_force 255
 
 on fs
-    mkdir /dev/block/bootdevice/ 0770 shell system
-    mkdir /dev/block/bootdevice/by-name/ 0770 shell system
+    export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/boot_a /dev/block/bootdevice/by-name/boot_a
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/boot_b /dev/block/bootdevice/by-name/boot_b
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/system /dev/block/bootdevice/by-name/system
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/modemst1 /dev/block/bootdevice/by-name/modemst1
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/modemst2 /dev/block/bootdevice/by-name/modemst2
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/ocdt /dev/block/bootdevice/by-name/ocdt
-    symlink /dev/block/platform/soc/${ro.boot.bootdevice}/by-name/persist /dev/block/bootdevice/by-name/persist
-
-    # Load ADSP firmware for PMIC
+    symlink /dev/block/bootdevice/by-name/mdm_oem_stanvbk /dev/block/bootdevice/by-name/mdm_oem_stanvbk_a
+    symlink /dev/block/bootdevice/by-name/mdm_oem_stanvbk /dev/block/bootdevice/by-name/mdm_oem_stanvbk_b
+    symlink /dev/block/bootdevice/by-name/mdm_oem_dycnvbk /dev/block/bootdevice/by-name/mdm_oem_dycnvbk_a
+    symlink /dev/block/bootdevice/by-name/mdm_oem_dycnvbk /dev/block/bootdevice/by-name/mdm_oem_dycnvbk_b
+    symlink /dev/block/bootdevice/by-name/spunvm /dev/block/bootdevice/by-name/spunvm_a
+    symlink /dev/block/bootdevice/by-name/spunvm /dev/block/bootdevice/by-name/spunvm_b
+    # Set fscklog permission
+    chown root system /dev/fscklogs/log
+    chmod 0770 /dev/fscklogs/log
+    # Mount firmware
     mkdir /firmware
     mount vfat /dev/block/bootdevice/by-name/modem${ro.boot.slot_suffix} /firmware ro
 
-on post-fs
-    start boot-hal-1-2
+on init
+    insmod /vendor/lib/modules/q6_pdr_dlkm.ko
+    insmod /vendor/lib/modules/q6_notifier_dlkm.ko
+    insmod /vendor/lib/modules/snd_event_dlkm.ko
+    insmod /vendor/lib/modules/apr_dlkm.ko
+    insmod /vendor/lib/modules/gpr_dlkm.ko
+    insmod /vendor/lib/modules/spf_core_dlkm.ko
+    insmod /vendor/lib/modules/adsp_loader_dlkm.ko
+    wait /sys/kernel/boot_adsp/boot
+    write /sys/kernel/boot_adsp/boot 1
+    wait /sys/class/power_supply/battery
+    # Create location for fs_mgr to store abbreviated output from filesystem
+    # checker programs.
+    mkdir /dev/fscklogs 0770 root system
     setprop sys.usb.config adb
-    start variant-script
-    start overrideprops
-
-on property:twrp.modules.loaded=true
-    # Load ADSP firmware for PMIC
-    wait /sys/kernel/boot_adsp/boot
-    write /sys/kernel/boot_adsp/boot 1
-    wait /sys/class/power_supply/battery
-    wait /sys/class/oplus_chg/usb/otg_switch
-    write /sys/class/oplus_chg/usb/otg_switch 1
-    start health-hal-2-1
-
-on property:ro.twrp.fastbootd=1
-    # Load ADSP firmware for PMIC
-    wait /sys/kernel/boot_adsp/boot
-    write /sys/kernel/boot_adsp/boot 1
-    wait /sys/class/power_supply/battery
-    start health-hal-2-1
-    umount /firmware
+	setprop prepdecrypt.setpatch true
+	setprop prepdecrypt.loglevel 2
 
 on property:hwservicemanager.ready=true
     setprop ro.separate.soft ${ro.boot.prjname}
@@ -95,8 +82,8 @@ on property:hwservicemanager.ready=true
 on property:twrp.decrypt.done=true
     setprop ro.separate.soft ${ro.boot.prjname}
 
-on property:ro.boot.usbcontroller=*
-    setprop sys.usb.controller ${ro.boot.usbcontroller}
-    wait /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode
-    write /sys/bus/platform/devices/${ro.boot.usb.dwc3_msm:-a600000.ssusb}/mode peripheral
-    wait /sys/class/udc/${ro.boot.usbcontroller} 1
+on boot
+    start health-hal-2-1
+
+on post-fs
+    start boot-hal-1-2

@@ -61,7 +61,13 @@ PRODUCT_PACKAGES += update_engine \
     android.hardware.boot@1.2-impl-qti \
     android.hardware.boot@1.2-impl-qti.recovery \
     android.hardware.boot@1.2-service
-
+    android.hardware.gatekeeper@1.0-service-qti
+    android.hardware.keymaster@4.1-service-qti
+    android.hardware.security.keymint-service-qti
+    vendor.qti.hardware.qteeconnector@1.0-service
+    android.hardware.keymaster@4.0-service-qti
+    vendor.qti.hardware.qseecomd@1.0-service
+    
 PRODUCT_PACKAGES += \
     android.hardware.health@2.1-impl \
     android.hardware.health@2.1-service
@@ -102,9 +108,8 @@ PRODUCT_USE_DYNAMIC_PARTITIONS := true
 # fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.1-impl-mock \
-    android.hardware.fastboot@1.1-impl-mock.recovery \
     fastbootd
-    
+
 # qcom decryption
 PRODUCT_PACKAGES += \
     qcom_decrypt \
