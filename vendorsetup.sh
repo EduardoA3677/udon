@@ -1,3 +1,4 @@
+export ALLOW_MISSING_DEPENDENCIES=true
 export TARGET_ARCH="arm64-v8a"
 
 # Some about us
