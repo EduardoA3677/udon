@@ -41,7 +41,6 @@ export OF_STATUS_H=120
 # Device stuff
 export OF_NO_TREBLE_COMPATIBILITY_CHECK=1
 export OF_FBE_METADATA_MOUNT_IGNORE=1
-export OF_USE_LEGACY_BATTERY_SERVICES=1
 
 # Run a process after formatting data to work-around MTP issues
 export OF_RUN_POST_FORMAT_PROCESS=1
