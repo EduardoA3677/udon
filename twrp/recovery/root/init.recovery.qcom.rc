@@ -47,7 +47,6 @@ on early-init
 on init
     write /sys/class/backlight/panel0-backlight/brightness 200
     setprop sys.usb.configfs 1
-    setprop sys.usb.config adb
 
 
 on fs
@@ -69,6 +68,7 @@ on fs
 
 on post-fs
     start boot-hal-1-2
+    setprop sys.usb.config adb
     start variant-script
     start overrideprops
 
